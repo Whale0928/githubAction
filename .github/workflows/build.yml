@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   build:
     #https://github.blog/changelog/2022-08-09-github-actions-the-ubuntu-18-04-actions-runner-image-is-being-deprecated-and-will-be-removed-by-12-1-22/
@@ -22,45 +26,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Upload build artifacts
-        if: success()
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-artifacts
-          path: build/libs
-
-      # 이전에 실패한 테스트가 있을 경우에도 계속해서 테스트를 실행합니다.
-      - name: Run tests with Gradle
-        run: ./gradlew test --continue --no-daemon --console=plain --info
-        continue-on-error: true
-
-      # push나 pull request를 받은 경우, 그리고 pull request가 close되지 않은 경우에만 실행됩니다.
-      - name: Check test results and upload artifacts
-        if: always() && ${{ github.event_name == 'push' || github.event_name == 'pull_request' && github.event.action != 'closed' }}
-        run: |
-          if grep -Fq "BUILD SUCCESSFUL" build/reports/tests/test/index.html; then
-            echo "All tests passed"
-          else
-            echo "Some tests failed"
-            exit 1
-          fi
-
-        # 테스트 결과물을 확인하고, 테스트가 성공했을 경우에만 테스트 결과물을 업로드합니다.
-      - name: Upload test results
-        if: success() && ${{ github.event_name == 'push' || github.event_name == 'pull_request' && github.event.action != 'closed' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: build/reports/tests/test
