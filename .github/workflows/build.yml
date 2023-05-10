@@ -1,4 +1,4 @@
-name: gradle CI
+name: CI CD
 
 on:
   push:
@@ -7,47 +7,58 @@ on:
   pull_request:
     branches:
       - master
-# 워크플로우 트리거를 설정합니다. 'master' 브랜치에 푸시되거나 풀 리퀘스트가 생성될 때마다 실행됩니다.
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    # 작업이 실행될 운영 체제를 설정합니다. 여기서는 최신 우분투 버전을 사용합니다.
+    runs-on: ubuntu-18.04
 
     steps:
-      - uses: actions/checkout@v3
-      # 레포지토리의 소스 코드를 체크아웃하는 작업을 설정합니다.
+      - uses: actions/checkout@v2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      # Gradle 의존성을 캐시하는 작업을 설정합니다. 이렇게 하면 빌드 시간이 단축됩니다.
 
       - name: Build with Gradle
         run: ./gradlew build
-      # Gradle을 사용하여 프로젝트를 빌드하는 작업을 설정합니다.
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        if: success()
+        uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
           path: build/libs
 
+      # 이전에 실패한 테스트가 있을 경우에도 계속해서 테스트를 실행합니다.
       - name: Run tests with Gradle
         run: ./gradlew test --continue --no-daemon --console=plain --info
+        continue-on-error: true
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v1.0.8
+      # push나 pull request를 받은 경우, 그리고 pull request가 close되지 않은 경우에만 실행됩니다.
+      - name: Check test results and upload artifacts
+        if: always() && ${{ github.event_name == 'push' || github.event_name == 'pull_request' && github.event.action != 'closed' }}
+        run: |
+          if grep -Fq "BUILD SUCCESSFUL" build/reports/tests/test/index.html; then
+            echo "All tests passed"
+          else
+            echo "Some tests failed"
+            exit 1
+          fi
+
+        # 테스트 결과물을 확인하고, 테스트가 성공했을 경우에만 테스트 결과물을 업로드합니다.
+      - name: Upload test results
+        if: success() && ${{ github.event_name == 'push' || github.event_name == 'pull_request' && github.event.action != 'closed' }}
+        uses: actions/upload-artifact@v2
         with:
+          name: test-results
           path: build/reports/tests/test
-
