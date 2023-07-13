@@ -2,8 +2,9 @@ package com.example.github.cherrypick;
 
 public class PrTestClass {
 
-    // commit - 1
-    // commit - 2
-    // commit - 3
+    //1
+    //2
+    //3
+    //4
 
 }
