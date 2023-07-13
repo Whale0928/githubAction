@@ -8,4 +8,8 @@ public class PrTestClass {
         System.out.println("PR1");
     }
 
+    /*commit 2*/
+    public void commit2() {
+        System.out.println("PR2");
+    }
 }
