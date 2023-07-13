@@ -16,5 +16,9 @@ public class PrTestClass {
         System.out.println("commit 3");
     }
 
+    /*commit 4*/
+    private void commit4(){
+        System.out.println("commit 4");
+    }
 
 }
