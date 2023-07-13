@@ -22,4 +22,9 @@ public class PrTestClass {
     public void commit4() {
         System.out.println("PR4");
     }
+
+/*commit 5*/
+    public void commit5() {
+        System.out.println("PR5");
+    }
 }
