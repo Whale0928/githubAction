@@ -12,4 +12,10 @@ public class PrTestClass {
     public void commit2() {
         System.out.println("PR2");
     }
+
+    /*commit 3*/
+    public void commit3() {
+        System.out.println("PR3");
+    }
+
 }
