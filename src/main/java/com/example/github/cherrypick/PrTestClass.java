@@ -6,4 +6,9 @@ public class PrTestClass {
         System.out.println("commit 1");
     }
 
+    /*commit 2*/
+    private void commit2(){
+        System.out.println("commit 2");
+    }
+
 }
