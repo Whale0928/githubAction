@@ -1,10 +1,10 @@
 # githubAction
-깃허브 액션을 포함 한 
-각종 툴을 연구하고 학습하기 위한 레포지토리입니다.
+
+This repository is dedicated to researching and learning various tools, including GitHub Actions.
 
 
-#### 활용 연습 
-1. CI , CD 를 구축 , 테스트를 위한 깃허브액션 활용
-2. 코드 품질을 관리하는 소나클라우드(소나큐브) 활용
-3. Object Storage 를 활용한 파일 관리 활용
-4. 테스트 코드 영역을 활용한 코딩 테스트 작성
+## Utilization Practices:
+- **GitHub Actions:** Implementing and testing CI/CD.
+- **SonarCloud (SonarQube):** Leveraging for code quality management.
+- (deprecated) **Object Storage:** Utilizing for efficient file management. 
+- **Test Code Domain:** Writing coding tests.
